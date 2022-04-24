@@ -6,9 +6,10 @@ public class Mod {
     private boolean enabled;
     private float fileSize;
 
-    public Mod(String name, boolean enabled, float fileSize) {
+    public Mod(String name, float fileSize, int index, boolean enabled) {
         this.name = name;
         this.fileSize = fileSize;
+        this.index = index;
         this.enabled = enabled;
     }
     public String getName(){
@@ -20,6 +21,7 @@ public class Mod {
     public boolean getEnabled(){
         return this.enabled;
     }
+    public int getIndex(){ return this.index; }
 
     public void setEnabled(boolean enable){
         enabled = enable;

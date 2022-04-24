@@ -17,6 +17,7 @@ public class App {
     private JTextField outputPathTextField;
     private JButton buttonOutput;
     private JScrollPane modPane;
+    private JList list1;
 
     private final FileExtractor extractor;
     private String currentFile;
@@ -36,6 +37,7 @@ public class App {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
+
     }
 
     private void chooseOutputPath(){

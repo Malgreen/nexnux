@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.json.simple.*;
 import org.json.simple.parser.*;
@@ -25,8 +26,8 @@ public class ModList {
         this.jsonParser = new JSONParser();
 
     }
-    public void getAllMods(){}
-    public void getActiveMods(){}
+    public List<Mod> getAllMods(){ return mods; }
+    public List<Mod> getActiveMods(){ return mods.stream().filter( o -> o.getEnabled() == true).collect(Collectors.toList());}
 
     public void modifyMod(String modName, float fileSize, int index, boolean enabled){
         Mod mod = new Mod(modName, fileSize, index, enabled);

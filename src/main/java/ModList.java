@@ -16,7 +16,7 @@ import org.json.simple.parser.*;
 public class ModList {
 
     List<Mod> mods;
-    List<Mod> loadedMods;
+   // List<Mod> loadedMods;
     JSONHandler jsonHandler;
     JSONParser jsonParser;
 
@@ -31,7 +31,7 @@ public class ModList {
 
     public void modifyMod(String modName, float fileSize, int index, boolean enabled){
         Mod mod = new Mod(modName, fileSize, index, enabled);
-        if (containsMod(mods, modName)){
+        while (containsMod(mods, modName)){
             // can either use parameter or get object property name
             mods.remove(mod);
         }

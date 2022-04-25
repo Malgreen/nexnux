@@ -22,9 +22,16 @@ public class Game {
     public String getName() { return name; }
     public String getDeployDirectory() { return deployDirectory; }
     public String getModDirectory() { return modDirectory; }
+    public String getModListFile() { return modListFile; }
 
     private void GetMods(){
         ModList modList = new ModList(modListFile);
         List<Mod> mods = modList.getAllMods();
     }
+
+    @Override
+    public String toString(){
+        return name;
+    }
+
 }

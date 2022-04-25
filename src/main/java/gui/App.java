@@ -3,11 +3,14 @@ package main.java.gui;
 import javax.swing.*;
 
 import com.github.junrar.exception.RarException;
+import main.java.Game;
+import main.java.GameList;
 import main.java.utilities.*;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.List;
 
 
 public class App {
@@ -18,17 +21,26 @@ public class App {
     private JButton buttonOutput;
     private JScrollPane modPane;
     private JList list1;
+    private JButton newgameButton;
 
     private final FileExtractor extractor;
     private String currentFile;
     private String currentFileName;
     private String currentOutput;
+    private GameList gameList;
+    private List<Game> listOfGames;
 
     public App() {
         extractor = new FileExtractor();
         buttonBrowse.addActionListener(e -> chooseFile());
         buttonExtract.addActionListener(e -> extractFile());
         buttonOutput.addActionListener(e -> chooseOutputPath());
+        newgameButton.addActionListener(e -> addGameWindow());
+
+       // listOfGames = gameList.loadList("C:/Users/martinalgreen/Desktop/games.json");
+        gameList = new GameList();
+        listOfGames = gameList.loadList("C:/Users/martinalgreen/Desktop/games.json");
+        displayGames();
     }
 
     public static void main(String[] args) {
@@ -37,6 +49,7 @@ public class App {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
+
 
     }
 
@@ -70,6 +83,20 @@ public class App {
         }
         catch (IOException ex){ System.out.println(ex.getMessage());}
         catch (RarException e) { System.out.println("Rar archive not supported, rar5 or later"); }
+    }
+
+    void addGameWindow(){
+        JFrame jframe = new JFrame("game");
+        jframe
+
+    }
+
+    void displayGames(){
+        DefaultListModel gameslists  = new DefaultListModel<>();
+        for(Game game:listOfGames){
+            gameslists.addElement(game.toString());
+        }
+        list1.setModel(gameslists); //lets go
     }
 
 }

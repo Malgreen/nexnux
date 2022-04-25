@@ -10,6 +10,9 @@ import main.java.utilities.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -22,6 +25,7 @@ public class App {
     private JScrollPane modPane;
     private JList list1;
     private JButton newgameButton;
+    private JButton buttonRefresh;
 
     private final FileExtractor extractor;
     private String currentFile;
@@ -36,10 +40,16 @@ public class App {
         buttonExtract.addActionListener(e -> extractFile());
         buttonOutput.addActionListener(e -> chooseOutputPath());
         newgameButton.addActionListener(e -> addGameWindow());
+        buttonRefresh.addActionListener(e -> refreshList());
 
        // listOfGames = gameList.loadList("C:/Users/martinalgreen/Desktop/games.json");
         gameList = new GameList();
-        listOfGames = gameList.loadList("C:/Users/martinalgreen/Desktop/games.json");
+        Path path = Paths.get("C:/Users/martinalgreen/Desktop/games.json");
+        if (path.toFile().isFile()) {
+            listOfGames = gameList.loadList("C:/Users/martinalgreen/Desktop/games.json");
+        } else {
+            listOfGames = new ArrayList<>();
+        }
         displayGames();
     }
 
@@ -86,9 +96,10 @@ public class App {
     }
 
     void addGameWindow(){
-        JFrame jframe = new JFrame("game");
-        jframe
-
+        GameConfig gameConfigurator = new GameConfig();
+        gameConfigurator.setVisible(true);
+        //Game game = gameConfigurator.onOK();
+        //listOfGames.add(game);
     }
 
     void displayGames(){
@@ -97,6 +108,10 @@ public class App {
             gameslists.addElement(game.toString());
         }
         list1.setModel(gameslists); //lets go
+    }
+
+    void refreshList(){
+        displayGames();
     }
 
 }

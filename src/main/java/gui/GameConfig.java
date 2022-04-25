@@ -4,6 +4,9 @@ import main.java.Game;
 
 import javax.swing.*;
 import java.awt.event.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 
 public class GameConfig extends JDialog {
     private JPanel contentPane;
@@ -47,18 +50,26 @@ public class GameConfig extends JDialog {
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
-    private Game onOK() {
+    public Game onOK() {
         String modDeployFolder = fieldDeployDir.getText();
         String modFolder = fieldModDir.getText();
-        String modlistfolder
-        Game game = new Game("test")
+        String modListFile = modFolder + "\\" + "mods.json";
+        Game game = new Game("test", modDeployFolder, modFolder, modListFile);
         // add your code here
-        dispose();
+        return game;
     }
 
     private void onCancel() {
         // add your code here if necessary
         dispose();
+    }
+    private void getModListFile(String modFolder){
+        Path path = Paths.get(modFolder + "\\" + "mods.json");
+        if (path.toFile().isFile()) {
+            return;
+        } else {
+
+        }
     }
 
     public static void main(String[] args) {

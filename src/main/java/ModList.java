@@ -21,9 +21,9 @@ public class ModList {
     JSONParser jsonParser;
 
     public ModList(String modListFile) {
-        this.mods = loadList(modListFile);
         this.jsonHandler = new JSONHandler();
         this.jsonParser = new JSONParser();
+        this.mods = loadList(modListFile);
 
     }
     public List<Mod> getAllMods(){ return mods; }

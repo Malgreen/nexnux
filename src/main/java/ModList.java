@@ -2,10 +2,7 @@ package main.java;
 
 import main.java.utilities.*;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,8 +46,8 @@ public class ModList {
     Mod loadMod(JSONObject jo){
         // Load mod from JSON object
         String modName = (String) jo.get("mod-name");
-        float modSize = (float) jo.get("filesize");
-        int modIndex = (int) jo.get("index");
+        double modSize = (double) jo.get("filesize");
+        int modIndex =Math.toIntExact((long)jo.get("index"));
         boolean modEnabled = (boolean) jo.get("enabled");
 
         Mod mod = new Mod(modName, modSize, modIndex, modEnabled);
@@ -69,7 +66,7 @@ public class ModList {
             modObject.put("index", mod.getIndex());
             modArray.add(modObject);
         }
-        try (FileWriter file = new FileWriter(outputPath + "\\" + "mods.json")) {
+        try (FileWriter file = new FileWriter(outputPath)) {
             file.write(modArray.toJSONString());
             file.flush();
 
@@ -82,23 +79,43 @@ public class ModList {
         List<Mod> loadedMods = new ArrayList<>();
         try (FileReader reader = new FileReader(inputFile))
         {
+            if (reader.toString() == "") { return loadedMods; }
             //Read JSON file
-            Object obj = jsonParser.parse(reader); // Temporary object
+            Object obj = jsonParser.parse(reader);// Temporary object
             JSONArray modList = (JSONArray) obj;
 
             // Iterate over each read mod
             for (Object mod:modList){
                 Mod loadedMod = loadMod( (JSONObject) mod); // Create a new mod by parsing an object
-                mods.add(loadedMod.getIndex(), loadedMod); //Insert the mod in the list where the index is
+                loadedMods.add(Math.toIntExact(loadedMod.getIndex()), loadedMod); //Insert the mod in the list where the index is
             }
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            setupFile(inputFile);
+            //e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ParseException e) {
+            mods = new ArrayList<>();
+            Mod mod = new Mod("modtest", 1.0, 0, false);
+            mods.add(mod);
+            tryAgain(inputFile);
+            //e.printStackTrace();
+        }
+        System.out.print(loadedMods.get(0));
+        return loadedMods;
+    }
+    private void tryAgain(String file){
+        saveList(file);
+        loadList(file);
+    }
+
+    private void setupFile(String filePath){
+        try (FileWriter file = new FileWriter(filePath)) {
+            file.flush();
+
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        return loadedMods;
     }
 
     public boolean containsMod(List<Mod> list, String modName){

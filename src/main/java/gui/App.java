@@ -98,8 +98,8 @@ public class App {
     void addGameWindow(){
         GameConfig gameConfigurator = new GameConfig();
         gameConfigurator.setVisible(true);
-        //Game game = gameConfigurator.onOK();
-        //listOfGames.add(game);
+        Game game = gameConfigurator.onOK();
+        if (game != null) { listOfGames.add(game); }
     }
 
     void displayGames(){

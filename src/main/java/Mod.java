@@ -2,11 +2,11 @@ package main.java;
 
 public class Mod {
     private String name;
-    private int index;
+    private long index;
     private boolean enabled;
-    private float fileSize;
+    private double fileSize;
 
-    public Mod(String name, float fileSize, int index, boolean enabled) {
+    public Mod(String name, double fileSize, long index, boolean enabled) {
         this.name = name;
         this.fileSize = fileSize;
         this.index = index;
@@ -15,16 +15,21 @@ public class Mod {
     public String getName(){
         return this.name;
     }
-    public float getFileSize(){
+    public double getFileSize(){
         return this.fileSize;
     }
     public boolean getEnabled(){
         return this.enabled;
     }
-    public int getIndex(){ return this.index; }
+    public long getIndex(){ return this.index; }
 
     public void setEnabled(boolean enable){
         enabled = enable;
+    }
+
+    @Override
+    public String toString(){
+        return getName();
     }
 
 }

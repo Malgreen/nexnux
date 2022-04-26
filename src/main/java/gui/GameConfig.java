@@ -4,8 +4,10 @@ import main.java.Game;
 
 import javax.swing.*;
 import java.awt.event.*;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.rmi.AccessException;
 import java.util.ArrayList;
 
 public class GameConfig extends JDialog {
@@ -22,17 +24,9 @@ public class GameConfig extends JDialog {
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
 
-        buttonOK.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onOK();
-            }
-        });
+        buttonOK.addActionListener(e -> onOK());
 
-        buttonCancel.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        });
+        buttonCancel.addActionListener(e -> onCancel());
 
         // call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -51,16 +45,26 @@ public class GameConfig extends JDialog {
     }
 
     public Game onOK() {
-        String modDeployFolder = fieldDeployDir.getText();
-        String modFolder = fieldModDir.getText();
-        String modListFile = modFolder + "\\" + "mods.json";
-        Game game = new Game("test", modDeployFolder, modFolder, modListFile);
-        // add your code here
-        return game;
+        try{
+            String modDeployFolder = fieldDeployDir.getText();
+            String modFolder = fieldModDir.getText();
+            String modListFile = modFolder + "\\" + "mods.json";
+            Game game = new Game("test", modDeployFolder, modFolder, modListFile);
+            // add your code here
+            dispose();
+            return game;
+        } catch (Exception e) {
+            e.printStackTrace();
+            dispose();
+            System.out.println("Why is this here");
+            return null;
+        }
+
     }
 
     private void onCancel() {
         // add your code here if necessary
+        System.out.println("cancelled");
         dispose();
     }
     private void getModListFile(String modFolder){

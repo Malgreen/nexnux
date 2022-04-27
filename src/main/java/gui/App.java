@@ -7,12 +7,8 @@ import main.java.Game;
 import main.java.GameList;
 import main.java.utilities.*;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -33,6 +29,7 @@ public class App {
     private String currentOutput;
     private GameList gameList;
     private List<Game> listOfGames;
+    private ErrorHandler errorHandler;
 
     public App() {
         extractor = new FileExtractor();
@@ -41,9 +38,10 @@ public class App {
         buttonOutput.addActionListener(e -> chooseOutputPath());
         newgameButton.addActionListener(e -> addGameWindow());
         buttonRefresh.addActionListener(e -> refreshList());
+        errorHandler = new ErrorHandler();
+        String gameSettings = System.getProperty("user.home") + File.separator + ".nexnux" + File.separator + "games.json";
+        gameList = new GameList(gameSettings);
 
-       // listOfGames = gameList.loadList("C:/Users/martinalgreen/Desktop/games.json");
-        gameList = new GameList("C:/Users/martinalgreen/Desktop/games.json");
         displayGames();
     }
 
@@ -92,12 +90,14 @@ public class App {
     void addGameWindow(){
         GameConfig gameConfigurator = new GameConfig();
         Game game = gameConfigurator.showDialog(); //holy mother of christ it works
-        if (game != null) { gameList.modifyGame(game.getName(), game.getModDirectory(), game.getDeployDirectory(), game.getModListFile());}
-
+        if (game != null) {
+            if (gameList.dirsAlreadyUsed(game.getModDirectory(), game.getDeployDirectory())) { errorHandler.showPopup("Mod or deploy directory already in use"); return;}
+            gameList.modifyGame(game.getName(), game.getModDirectory(), game.getDeployDirectory(), game.getModListFile());
+        }
     }
 
     void displayGames(){
-        DefaultListModel gameslists  = new DefaultListModel<>();
+        DefaultListModel<Object> gameslists  = new DefaultListModel<>();
         for(Game game:gameList.loadList()){
             System.out.println("Loading game list: " + game.toString());
             gameslists.addElement(game.toString());

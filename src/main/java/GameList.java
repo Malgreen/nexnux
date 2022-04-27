@@ -6,10 +6,10 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.*;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +49,7 @@ public class GameList {
     }
 
     public void saveList(){
+        //TODO: Change JSON lib to GSON (by google)
         JSONArray jsonArray = new JSONArray();
         for (Game game:games){
             JSONObject gameObj = new JSONObject();
@@ -80,22 +81,27 @@ public class GameList {
                 loadedGames.add(loadedGame);
             }
         } catch (FileNotFoundException e) {
-           errorHandler.showErrorBox(e);
+           //errorHandler.showErrorBox(e);
             setupFile();
+            reload();
             System.out.println("Setting up file");
-            e.printStackTrace();
+            //e.printStackTrace();
         } catch (IOException e) {
             errorHandler.showErrorBox(e);
             e.printStackTrace();
         } catch (ParseException e) {
-            games = new ArrayList<Game>();
-            reload();
-            //errorHandler.showErrorBox(e);
             e.printStackTrace();
         }
         return loadedGames;
     }
     private void setupFile(){
+        Path f = Paths.get(System.getProperty("user.home") + File.separator + ".nexnux");
+        games = new ArrayList<Game>();
+        try {
+            Files.createDirectory(f);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         try (FileWriter file = new FileWriter(filePath)) {
             file.flush();
 
@@ -110,6 +116,10 @@ public class GameList {
     }
 
     public boolean gameExists(List<Game> list, String gameName){
-        return list.stream().filter(o -> o.getName().equals(gameName)).findAny().isPresent();
+        return list.stream().anyMatch(o -> o.getName().equals(gameName));
+    }
+
+    public boolean dirsAlreadyUsed(String modDir, String deployDir){
+        return (games.stream().anyMatch(o -> o.getDeployDirectory().equals(deployDir)) || games.stream().anyMatch(o -> o.getModDirectory().equals(modDir)));
     }
 }

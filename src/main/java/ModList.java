@@ -91,17 +91,15 @@ public class ModList {
                 loadedMods.add(Math.toIntExact(loadedMod.getIndex()), loadedMod); //Insert the mod in the list where the index is
             }
         } catch (FileNotFoundException e) {
-            errorHandler.showErrorBox(e);
             setupFile(inputFile);
-            e.printStackTrace();
+            reload(inputFile);
+            //e.printStackTrace();
         } catch (IOException e) {
             errorHandler.showErrorBox(e);
             e.printStackTrace();
         } catch (ParseException e) {
-            mods = new ArrayList<>(); //REMOVE THIS WTH
-            Mod mod = new Mod("modtest", 1.0, 0, false);
-            mods.add(mod);
-            reload(inputFile);
+             //REMOVE THIS WTH
+            e.printStackTrace();
         }
         return loadedMods;
     }
@@ -111,6 +109,7 @@ public class ModList {
     }
 
     private void setupFile(String filePath){
+        mods = new ArrayList<>();
         try (FileWriter file = new FileWriter(filePath)) {
             file.flush();
 

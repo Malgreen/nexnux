@@ -6,12 +6,7 @@ import main.java.utilities.ErrorHandler;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.awt.*;
 import java.awt.event.*;
-import java.nio.file.AccessDeniedException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.rmi.AccessException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,10 +18,10 @@ public class GameConfig extends JDialog {
     private JTextField fieldDeployDir;
     private JLabel textModDir;
     private JLabel textDeployDir;
+    private JTextField fieldName;
+    private JLabel textName;
     private Game currentGame;
-    private ErrorHandler errorHandler;
-
-    private List<JTextField> tfList;
+    private final ErrorHandler errorHandler;
 
     public GameConfig() {
         errorHandler = new ErrorHandler();
@@ -36,10 +31,11 @@ public class GameConfig extends JDialog {
         buttonOK.setEnabled(!areFieldsEmpty());
 
         //Setup text field stuff
-        tfList = new ArrayList<>();
+        List<JTextField> tfList = new ArrayList<>();
         tfList.add(fieldModDir);
         tfList.add(fieldDeployDir);
-        for (JTextField tf:tfList){
+        tfList.add(fieldName);
+        for (JTextField tf: tfList){
             tf.getDocument().addDocumentListener(documentListener);
         }
 
@@ -58,11 +54,7 @@ public class GameConfig extends JDialog {
         });
 
         // call onCancel() on ESCAPE
-        contentPane.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
     public Game showDialog(){
@@ -71,8 +63,7 @@ public class GameConfig extends JDialog {
     }
 
     private boolean areFieldsEmpty(){
-        boolean bool = fieldDeployDir.getText().trim().isEmpty() || fieldModDir.getText().trim().isEmpty();
-        return bool;
+        return fieldDeployDir.getText().trim().isEmpty() || fieldModDir.getText().trim().isEmpty() || fieldName.getText().trim().isEmpty();
     }
 
     public void onOK() {
@@ -80,8 +71,9 @@ public class GameConfig extends JDialog {
             System.out.println("OK pressed");
             String modDeployFolder = fieldDeployDir.getText();
             String modFolder = fieldModDir.getText();
+            String gameName = fieldName.getText();
             String modListFile = modFolder + "\\" + "mods.json";
-            currentGame = new Game("test", modDeployFolder, modFolder, modListFile);
+            currentGame = new Game(gameName, modDeployFolder, modFolder, modListFile); //DONT DO THIS
         } catch (Exception e) {
             errorHandler.showErrorBox(e);
             e.printStackTrace();
@@ -98,14 +90,6 @@ public class GameConfig extends JDialog {
         setVisible(false);
         dispose();
     }
-    private void getModListFile(String modFolder){
-        Path path = Paths.get(modFolder + "\\" + "mods.json");
-        if (path.toFile().isFile()) {
-            return;
-        } else {
-
-        }
-    }
 
     DocumentListener documentListener = new DocumentListener() {
         @Override
@@ -120,11 +104,7 @@ public class GameConfig extends JDialog {
 
         @Override
         public void changedUpdate(DocumentEvent e) {
-            if (areFieldsEmpty()){
-                buttonOK.setEnabled(false);
-            } else {
-                buttonOK.setEnabled(true);
-            }
+            buttonOK.setEnabled(!areFieldsEmpty());
         }
     };
 

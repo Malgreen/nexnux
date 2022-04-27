@@ -43,13 +43,7 @@ public class App {
         buttonRefresh.addActionListener(e -> refreshList());
 
        // listOfGames = gameList.loadList("C:/Users/martinalgreen/Desktop/games.json");
-        gameList = new GameList();
-        Path path = Paths.get("C:/Users/martinalgreen/Desktop/games.json");
-        if (path.toFile().isFile()) {
-            listOfGames = gameList.loadList("C:/Users/martinalgreen/Desktop/games.json");
-        } else {
-            listOfGames = new ArrayList<>();
-        }
+        gameList = new GameList("C:/Users/martinalgreen/Desktop/games.json");
         displayGames();
     }
 
@@ -97,14 +91,15 @@ public class App {
 
     void addGameWindow(){
         GameConfig gameConfigurator = new GameConfig();
-        gameConfigurator.setVisible(true);
-        Game game = gameConfigurator.onOK();
-        if (game != null) { listOfGames.add(game); }
+        Game game = gameConfigurator.showDialog(); //holy mother of christ it works
+        if (game != null) { gameList.modifyGame(game.getName(), game.getModDirectory(), game.getDeployDirectory(), game.getModListFile());}
+
     }
 
     void displayGames(){
         DefaultListModel gameslists  = new DefaultListModel<>();
-        for(Game game:listOfGames){
+        for(Game game:gameList.loadList()){
+            System.out.println("Loading game list: " + game.toString());
             gameslists.addElement(game.toString());
         }
         list1.setModel(gameslists); //lets go

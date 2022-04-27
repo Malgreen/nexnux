@@ -1,5 +1,6 @@
 package main.java;
 
+import main.java.utilities.ErrorHandler;
 import main.java.utilities.JSONHandler;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -17,14 +18,24 @@ public class GameList {
     List<Game> games;
     JSONHandler jsonHandler;
     JSONParser jsonParser;
+    ErrorHandler errorHandler;
+    private String filePath;
 
-    public GameList() {
+    public GameList(String gameListFile) {
         jsonHandler = new JSONHandler();
         jsonParser = new JSONParser();
+        errorHandler = new ErrorHandler();
+        this.filePath = gameListFile;
+        this.games = loadList();
     }
 
-    void modifyGame(){
-
+    public void modifyGame(String name, String modDir, String deployDir, String modListFile){
+        Game game = new Game(name, deployDir, modDir, modListFile);
+        while (gameExists(games, name)){
+            games.removeIf(obj -> obj.getName().equals(name));
+        }
+        games.add(game);
+        saveList();
     }
 
     Game loadGame(JSONObject jo){
@@ -37,7 +48,7 @@ public class GameList {
         return game;
     }
 
-    public void saveList(String outputPath){
+    public void saveList(){
         JSONArray jsonArray = new JSONArray();
         for (Game game:games){
             JSONObject gameObj = new JSONObject();
@@ -47,7 +58,7 @@ public class GameList {
             gameObj.put("mod-list-file", game.getModListFile());
             jsonArray.add(gameObj);
         }
-        try (FileWriter file = new FileWriter(outputPath + "\\" + "games.json")) {
+        try (FileWriter file = new FileWriter(filePath)) {
             file.write(jsonArray.toJSONString());
             file.flush();
 
@@ -55,9 +66,9 @@ public class GameList {
             e.printStackTrace();
         }
     }
-    public List<Game> loadList(String inputFile){
+    public List<Game> loadList(){
         List<Game> loadedGames = new ArrayList<>();
-        try (FileReader reader = new FileReader(inputFile))
+        try (FileReader reader = new FileReader(filePath))
         {
             //Read JSON file
             Object obj = jsonParser.parse(reader); // Temporary object
@@ -65,18 +76,40 @@ public class GameList {
 
             // Iterate over each read game
             for (Object game:gameList){
-               // TODO: IMPLEMENT loadGame  Mod loadedMod = loadMod( (JSONObject) mod); // Create a new mod by parsing an object
-                Game loadedGame = loadGame( (JSONObject) game);
-                games.add(loadedGame);
-               // TODO: IMPLEMENT  mods.add(loadedMod.getIndex(), loadedMod); //Insert the mod in the list where the index is
+                Game loadedGame = loadGame( (JSONObject) game); //Add the game to the list
+                loadedGames.add(loadedGame);
             }
         } catch (FileNotFoundException e) {
+           errorHandler.showErrorBox(e);
+            setupFile();
+            System.out.println("Setting up file");
             e.printStackTrace();
         } catch (IOException e) {
+            errorHandler.showErrorBox(e);
             e.printStackTrace();
         } catch (ParseException e) {
+            games = new ArrayList<Game>();
+            reload();
+            //errorHandler.showErrorBox(e);
             e.printStackTrace();
         }
         return loadedGames;
+    }
+    private void setupFile(){
+        try (FileWriter file = new FileWriter(filePath)) {
+            file.flush();
+
+        } catch (IOException e) {
+            errorHandler.showErrorBox(e);
+            e.printStackTrace();
+        }
+    }
+    void reload(){
+        saveList();
+        loadList();
+    }
+
+    public boolean gameExists(List<Game> list, String gameName){
+        return list.stream().filter(o -> o.getName().equals(gameName)).findAny().isPresent();
     }
 }

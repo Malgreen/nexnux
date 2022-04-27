@@ -16,21 +16,23 @@ public class ModList {
    // List<Mod> loadedMods;
     JSONHandler jsonHandler;
     JSONParser jsonParser;
+    ErrorHandler errorHandler;
 
     public ModList(String modListFile) {
         this.jsonHandler = new JSONHandler();
         this.jsonParser = new JSONParser();
+        this.errorHandler = new ErrorHandler();
         this.mods = loadList(modListFile);
 
     }
     public List<Mod> getAllMods(){ return mods; }
-    public List<Mod> getActiveMods(){ return mods.stream().filter( o -> o.getEnabled() == true).collect(Collectors.toList());}
+    public List<Mod> getActiveMods(){ return mods.stream().filter(Mod::getEnabled).collect(Collectors.toList());}
 
     public void modifyMod(String modName, float fileSize, int index, boolean enabled){
         Mod mod = new Mod(modName, fileSize, index, enabled);
         while (containsMod(mods, modName)){
             // can either use parameter or get object property name
-            mods.remove(mod);
+            mods.removeIf(obj -> obj.getName().equals(modName));
         }
         mods.add(index, mod);
 
@@ -50,8 +52,7 @@ public class ModList {
         int modIndex =Math.toIntExact((long)jo.get("index"));
         boolean modEnabled = (boolean) jo.get("enabled");
 
-        Mod mod = new Mod(modName, modSize, modIndex, modEnabled);
-        return mod;
+        return new Mod(modName, modSize, modIndex, modEnabled);
     }
 
     public void saveList(String outputPath){
@@ -79,7 +80,7 @@ public class ModList {
         List<Mod> loadedMods = new ArrayList<>();
         try (FileReader reader = new FileReader(inputFile))
         {
-            if (reader.toString() == "") { return loadedMods; }
+            if (reader.toString().equals("")) { return loadedMods; }
             //Read JSON file
             Object obj = jsonParser.parse(reader);// Temporary object
             JSONArray modList = (JSONArray) obj;
@@ -90,21 +91,21 @@ public class ModList {
                 loadedMods.add(Math.toIntExact(loadedMod.getIndex()), loadedMod); //Insert the mod in the list where the index is
             }
         } catch (FileNotFoundException e) {
+            errorHandler.showErrorBox(e);
             setupFile(inputFile);
-            //e.printStackTrace();
+            e.printStackTrace();
         } catch (IOException e) {
+            errorHandler.showErrorBox(e);
             e.printStackTrace();
         } catch (ParseException e) {
-            mods = new ArrayList<>();
+            mods = new ArrayList<>(); //REMOVE THIS WTH
             Mod mod = new Mod("modtest", 1.0, 0, false);
             mods.add(mod);
-            tryAgain(inputFile);
-            //e.printStackTrace();
+            reload(inputFile);
         }
-        System.out.print(loadedMods.get(0));
         return loadedMods;
     }
-    private void tryAgain(String file){
+    private void reload(String file){
         saveList(file);
         loadList(file);
     }
@@ -114,6 +115,7 @@ public class ModList {
             file.flush();
 
         } catch (IOException e) {
+            errorHandler.showErrorBox(e);
             e.printStackTrace();
         }
     }

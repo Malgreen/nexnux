@@ -5,6 +5,11 @@ import main.java.GameList;
 import main.java.utilities.ErrorHandler;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 
 public class GameView {
@@ -26,14 +31,24 @@ public class GameView {
         buttonAccept.addActionListener(e -> onAccept());
         buttonConfig.addActionListener(e -> onConfig());
         buttonAdd.addActionListener(e -> onAddGame());
+        buttonRemove.addActionListener(e -> onRemoveGame());
         buttonRemove.setEnabled(false);
-
+        buttonConfig.setEnabled(false);
+        setupWindow();
         errorHandler = new ErrorHandler();
 
         getProgramSettings();
         gameList = new GameList(gameListFile);
 
         displayGames();
+        listDisplayGames.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                buttonConfig.setEnabled(listDisplayGames.getSelectedValue() != null);
+                buttonRemove.setEnabled(listDisplayGames.getSelectedValue() != null);
+                focusGame();
+            }
+        });
     }
 
     public static void main(String[] args) {
@@ -49,12 +64,23 @@ public class GameView {
     }
 
     void onConfig(){
+        // Find object in gameList that has the same name as the selected item in listDiplayGames
+        focusGame();
+        System.out.println(listDisplayGames.getSelectedValue());
+        System.out.println(focusedGame);
 
+
+        if (focusedGame != null){
+            gameList.removeGame(focusedGame);
+            configureGame(false);
+        }
     }
 
     void onAddGame(){
         configureGame(true);
     }
+
+    void onRemoveGame() { gameList.removeGame(focusedGame); displayGames(); }
 
     void displayGames(){
         DefaultListModel<Object> listOfGames  = new DefaultListModel<>(); // This class is used to display in JLists
@@ -65,6 +91,12 @@ public class GameView {
         listDisplayGames.setModel(listOfGames); //lets go
     }
 
+    void focusGame(){
+        if (listDisplayGames.getSelectedValue() != null) {
+            focusedGame = gameList.loadList().stream().filter(o -> o.getName().equals(listDisplayGames.getSelectedValue().toString())).findAny().orElse(null);
+        }
+    }
+
     void getProgramSettings(){
         gameListFile = System.getProperty("user.home") + File.separator + ".nexnux" + File.separator + "games.json";
     }
@@ -73,10 +105,17 @@ public class GameView {
         GameConfigView gameConfigurator = new GameConfigView(isInstall, focusedGame);
         Game game = gameConfigurator.showDialog(); //holy mother of christ it works
         if (game != null) {
+
+            // First check if the directories can be used, then modify/add the game to the list
             if (gameList.dirsAlreadyUsed(game.getModDirectory(), game.getDeployDirectory())) { errorHandler.showPopup("Mod or deploy directory already in use"); return;}
             if (game.getModDirectory().equals(game.getDeployDirectory())) { errorHandler.showPopup("Mod and deploy directory cannot be the same"); return; }
             gameList.modifyGame(game.getName(), game.getModDirectory(), game.getDeployDirectory(), game.getModListFile());
         }
         displayGames();
+    }
+
+    private void setupWindow(){
+        this.panelMain.setMinimumSize(new Dimension(500,300));
+        listDisplayGames.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
     }
 }

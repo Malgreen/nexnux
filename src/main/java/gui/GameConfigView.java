@@ -6,6 +6,7 @@ import main.java.utilities.ErrorHandler;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.util.ArrayList;
@@ -30,6 +31,10 @@ public class GameConfigView extends JDialog {
         getRootPane().setDefaultButton(buttonOK);
         errorHandler = new ErrorHandler();
         buttonOK.setEnabled(false);
+        fieldDeployDir.setEditable(false);
+        fieldModDir.setEditable(false);
+        this.setTitle("Add game");
+        setupWindow();
 
         // Dialog stuff
         buttonOK.addActionListener(e -> onOK());
@@ -54,8 +59,10 @@ public class GameConfigView extends JDialog {
         }
 
         //Check if it is a new game
-        if (!isInstall) {
+        if (!isInstall && inputGame != null) {
             currentGame = inputGame;
+            this.setTitle("Configure " + currentGame.getName());
+            fieldGameName.setEditable(false);
             displayGameInfo();
         }
 
@@ -121,7 +128,12 @@ public class GameConfigView extends JDialog {
     }
 
     private boolean areFieldsEmpty(){
+
         return fieldDeployDir.getText().trim().isEmpty() || fieldModDir.getText().trim().isEmpty() || fieldGameName.getText().trim().isEmpty();
+    }
+
+    private void setupWindow(){
+        this.setMinimumSize(new Dimension(500, 300));
     }
 
     DocumentListener documentListener = new DocumentListener() {

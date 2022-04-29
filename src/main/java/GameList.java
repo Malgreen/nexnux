@@ -38,6 +38,11 @@ public class GameList {
         saveList();
     }
 
+    public void removeGame(Game game){
+        games.removeIf(obj -> obj.getName().equals(game.getName()));
+        saveList();
+    }
+
     Game loadGame(JSONObject jo){
         String gameName = (String) jo.get("game-name");
         String modDir = (String) jo.get("mod-directory");

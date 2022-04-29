@@ -110,7 +110,8 @@ public class ModList {
 
     private void setupFile(String filePath){
         mods = new ArrayList<>();
-        try (FileWriter file = new FileWriter(filePath)) {
+        try {
+            FileWriter file = new FileWriter(filePath);
             file.flush();
 
         } catch (IOException e) {

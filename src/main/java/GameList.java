@@ -28,6 +28,13 @@ public class GameList {
         this.filePath = gameListFile;
         this.games = loadList();
     }
+    public void findGame(String name){
+        String modDir;
+        String deployDir;
+        String modsFile;
+
+        //Game game = new Game(name, deployDir, modDir, modsFile);
+    }
 
     public void modifyGame(String name, String modDir, String deployDir, String modListFile){
         Game game = new Game(name, deployDir, modDir, modListFile);

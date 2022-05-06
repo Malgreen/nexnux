@@ -2,6 +2,8 @@ package main.java.gui;
 
 import main.java.Game;
 import main.java.GameList;
+import main.java.gui.utilities.CheckboxListCellRenderer;
+import main.java.gui.utilities.ListItemTransferHandler;
 import main.java.utilities.ErrorHandler;
 
 import javax.swing.*;
@@ -84,11 +86,28 @@ public class GameView {
 
     void displayGames(){
         DefaultListModel<Object> listOfGames  = new DefaultListModel<>(); // This class is used to display in JLists
+        listDisplayGames.setDragEnabled(true);
+        listDisplayGames.setDropMode(DropMode.INSERT); // Fix this
+        listDisplayGames.setTransferHandler(new ListItemTransferHandler());
+        //Drag and drop works, but maybe save the actual list in the way that displayed list is shown?
+        // Maybe dont use drag and drop, but specific buttons for moving load order
+        // ^ that would be ugly though, lets try to be a bit more civilized
         for(Game game:gameList.loadList()){
             System.out.println("Loading game list: " + game.toString());
             listOfGames.addElement(game.toString());
         }
         listDisplayGames.setModel(listOfGames); //lets go
+        saveDisplayedGames(listOfGames);
+    }
+
+    void saveDisplayedGames(DefaultListModel<Object> displayedList){
+
+        for(int i=0; i < displayedList.getSize(); i++){
+            String gameName = displayedList.getElementAt(i).toString();
+            String gameModDir;
+            String gameDeployDir;
+            String gameModsFile;
+        }
     }
 
     void focusGame(){

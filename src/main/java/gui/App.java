@@ -36,7 +36,7 @@ public class App {
         buttonBrowse.addActionListener(e -> chooseFile());
         buttonExtract.addActionListener(e -> extractFile());
         buttonOutput.addActionListener(e -> chooseOutputPath());
-        newgameButton.addActionListener(e -> addGameWindow());
+        //newgameButton.addActionListener(e -> addGameWindow());
         buttonRefresh.addActionListener(e -> refreshList());
         errorHandler = new ErrorHandler();
         String gameSettings = System.getProperty("user.home") + File.separator + ".nexnux" + File.separator + "games.json";
@@ -87,14 +87,6 @@ public class App {
         catch (RarException e) { System.out.println("Rar archive not supported, rar5 or later"); }
     }
 
-    void addGameWindow(){
-        GameConfig gameConfigurator = new GameConfig();
-        Game game = gameConfigurator.showDialog(); //holy mother of christ it works
-        if (game != null) {
-            if (gameList.dirsAlreadyUsed(game.getModDirectory(), game.getDeployDirectory())) { errorHandler.showPopup("Mod or deploy directory already in use"); return;}
-            gameList.modifyGame(game.getName(), game.getModDirectory(), game.getDeployDirectory(), game.getModListFile());
-        }
-    }
 
     void displayGames(){
         DefaultListModel<Object> gameslists  = new DefaultListModel<>();

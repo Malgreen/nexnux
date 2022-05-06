@@ -114,6 +114,7 @@ public class GameConfigView extends JDialog {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         fileChooser.setAcceptAllFileFilterUsed(false);
+        fileChooser.setApproveButtonText("Choose");
         fileChooser.showOpenDialog(null);
         if(fileChooser.getSelectedFile() != null)
         {

@@ -35,7 +35,6 @@ public class GameList {
 
         //Game game = new Game(name, deployDir, modDir, modsFile);
     }
-
     public void modifyGame(String name, String modDir, String deployDir, String modListFile){
         Game game = new Game(name, deployDir, modDir, modListFile);
         while (gameExists(games, name)){

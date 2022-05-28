@@ -11,4 +11,6 @@ public class ModView {
     private JTextPane paneModInfo;
     private JButton buttonConfigMod;
     private JButton buttonDeployMods;
+    private JLabel labelSaved;
+    private JButton buttonSave;
 }

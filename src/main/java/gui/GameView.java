@@ -12,6 +12,7 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
 import java.io.File;
 
 public class GameView {
@@ -62,16 +63,11 @@ public class GameView {
     }
 
     void onAccept(){
-
     }
 
     void onConfig(){
         // Find object in gameList that has the same name as the selected item in listDiplayGames
         focusGame();
-        System.out.println(listDisplayGames.getSelectedValue());
-        System.out.println(focusedGame);
-
-
         if (focusedGame != null){
             gameList.removeGame(focusedGame);
             configureGame(false);
@@ -97,17 +93,6 @@ public class GameView {
             listOfGames.addElement(game.toString());
         }
         listDisplayGames.setModel(listOfGames); //lets go
-        saveDisplayedGames(listOfGames);
-    }
-
-    void saveDisplayedGames(DefaultListModel<Object> displayedList){
-
-        for(int i=0; i < displayedList.getSize(); i++){
-            String gameName = displayedList.getElementAt(i).toString();
-            String gameModDir;
-            String gameDeployDir;
-            String gameModsFile;
-        }
     }
 
     void focusGame(){
